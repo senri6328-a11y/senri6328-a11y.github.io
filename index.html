@@ -44,4 +44,138 @@ button.secondary{background:#26364d;color:var(--text);border:1px solid #40536d}
 
 /* 法令・根拠表示用のスタイル */
 details.law-info{margin-top:14px;background:var(--law-bg);border:1px solid var(--law-border);border-radius:10px;padding:8px 12px;font-size:.84rem}
-details.law-info summary{cursor:pointer;font-weight:600;color:var(--accent2);user-select:none;display
+details.law-info summary{cursor:pointer;font-weight:600;color:var(--accent2);user-select:none;display:flex;align-items:center;gap:6px}
+details.law-info .law-content{margin-top:8px;padding-top:8px;border-top:1px dashed #2d425e;color:#cbe0f8;line-height:1.6}
+details.law-info ul{margin:4px 0 0;padding-left:18px}
+details.law-info li{margin-bottom:4px}
+
+footer{max-width:900px;margin:auto;padding:0 16px 28px;color:var(--muted);font-size:.8rem}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.card{padding:14px}header{padding-top:18px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>電気計算ツール</h1>
+  <p>直流・単相・三相の基本計算／現場・設計の確認用</p>
+</header>
+<main>
+  <div class="notice">計算結果は目安・確認用です。電線選定や電圧降下は、敷設条件・周囲温度・許容電流・保護協調・法令・メーカー資料を必ず確認してください。</div>
+  <nav class="tabs" aria-label="計算機能">
+    <button class="tab active" data-tab="power">電力・回路</button>
+    <button class="tab" data-tab="pf">力率・kVA</button>
+    <button class="tab" data-tab="drop">電圧降下</button>
+    <button class="tab" data-tab="wire">電線選定補助</button>
+    <button class="tab" data-tab="freq">周波数・回転数</button>
+  </nav>
+
+  <!-- ① 電力・回路タブ -->
+  <section id="power" class="tabpage">
+    <div class="card">
+      <h2>電圧・電流・電力・抵抗（オームの法則・電力）</h2>
+      <p class="desc">任意の2項目を入力すると残りが自動でロックされます。</p>
+      <div class="grid">
+        <div class="field"><label for="basicV">電圧 V（V）</label><input id="basicV" class="basic-input" type="number" min="0" step="any" placeholder="例：100"></div>
+        <div class="field"><label for="basicI">電流 I（A）</label><input id="basicI" class="basic-input" type="number" min="0" step="any" placeholder="例：5"></div>
+        <div class="field"><label for="basicP">電力 P（W）</label><input id="basicP" class="basic-input" type="number" min="0" step="any" placeholder="例：500"></div>
+        <div class="field"><label for="basicR">抵抗 R（Ω）</label><input id="basicR" class="basic-input" type="number" min="0" step="any" placeholder="例：20"></div>
+      </div>
+      <div class="actions"><button id="btnBasicCalc">計算する</button><button class="secondary" id="btnClearBasic">クリア</button></div>
+      <div id="basicResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula">P = V × I　／　V = I × R　／　I = V ÷ R　／　R = V ÷ I</p>
+      
+      <details class="law-info">
+        <summary>⚖️ 根拠・関連法令規格</summary>
+        <div class="law-content">
+          <b>電気技術の基礎理論（オームの法則・ジュールの法則）</b>
+          <ul>
+            <li><b>電気設備技術基準の解釈 第141条（電路の絶縁）：</b> 電線路の電圧・電流・抵抗の基本測定および絶縁性能保持の理論的基礎となります。</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <h2>単相・三相交流計算</h2>
+      <p class="desc">計算目的に合わせて入力欄が切り替わります。</p>
+      <div class="grid">
+        <div class="field"><label for="acPhase">回路</label><select id="acPhase"><option value="3">三相3線式</option><option value="1">単相</option></select></div>
+        <div class="field"><label for="acMode">計算目的</label><select id="acMode"><option value="p">有効電力 P（kW）を求める</option><option value="i">電流 I（A）を求める</option><option value="v">電圧 V（V）を求める</option></select></div>
+        <div class="field" id="fieldAcV"><label for="acV">電圧（V）</label><input id="acV" type="number" min="0" step="any" value="200"></div>
+        <div class="field" id="fieldAcI"><label for="acI">電流（A）</label><input id="acI" type="number" min="0" step="any" placeholder="例：10"></div>
+        <div class="field hidden" id="fieldAcP"><label for="acP">有効電力 P（kW）</label><input id="acP" type="number" min="0" step="any" placeholder="例：3.5"></div>
+        <div class="field"><label for="acPf">力率（0～1）</label><input id="acPf" type="number" min="0" max="1" step="any" value="0.8"></div>
+      </div>
+      <div class="actions"><button id="btnAcCalc">計算する</button><button class="secondary" id="btnAcClear">クリア</button></div>
+      <div id="acResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula">単相：P = V × I × PF ÷ 1000　／　三相：P = √3 × V × I × PF ÷ 1000</p>
+      
+      <details class="law-info">
+        <summary>⚖️ 根拠・関連法令規格</summary>
+        <div class="law-content">
+          <b>三相交流回路の計算基準</b>
+          <ul>
+            <li><b>電気設備技術基準の解釈 第143条（低圧配線方式）：</b> 低圧配線における単相2線式、単相3線式、三相3線式などの施設条件と、負荷平衡に関する規定。</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ② 力率・kVAタブ -->
+  <section id="pf" class="tabpage hidden">
+    <div class="card">
+      <h2>有効電力・皮相電力・無効電力・力率</h2>
+      <div class="grid">
+        <div class="field"><label for="pfP">有効電力 P（kW）</label><input id="pfP" type="number" min="0" step="any" placeholder="例：80"></div>
+        <div class="field"><label for="pfS">皮相電力 S（kVA）</label><input id="pfS" type="number" min="0" step="any" placeholder="例：100"></div>
+      </div>
+      <div class="actions"><button id="btnPfCalc">計算する</button><button class="secondary" id="btnPfClear">クリア</button></div>
+      <div id="pfResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula">PF = P ÷ S　／　Q = √(S² − P²)（単位：kvar）</p>
+      
+      <details class="law-info">
+        <summary>⚖️ 根拠・関連法令規格</summary>
+        <div class="law-content">
+          <b>力率改善と進相コンデンサ</b>
+          <ul>
+            <li><b>内線規程 3105節（力率の改善）：</b> 電源の有効利用および電圧降下軽減のため、負荷の力率は85%以上に維持することが勧められています。</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <h2>kW・kVA・A 換算</h2>
+      <div class="grid">
+        <div class="field"><label for="convPhase">回路</label><select id="convPhase"><option value="3">三相</option><option value="1">単相</option></select></div>
+        <div class="field"><label for="convV">電圧（V）</label><input id="convV" type="number" min="0" step="any" value="200"></div>
+        <div class="field"><label for="convPf">力率（0～1）</label><input id="convPf" type="number" min="0" max="1" step="any" value="0.9"></div>
+        <div class="field"><label for="convType">入力する値</label><select id="convType"><option value="kw">有効電力（kW）</option><option value="kva">皮相電力（kVA）</option><option value="a">電流（A）</option></select></div>
+        <div class="field"><label for="convVal">値</label><input id="convVal" type="number" min="0" step="any" placeholder="数値を入力"></div>
+      </div>
+      <div class="actions"><button id="btnConvCalc">換算する</button><button class="secondary" id="btnConvClear">クリア</button></div>
+      <div id="convResult" class="result hidden" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ③ 電圧降下タブ -->
+  <section id="drop" class="tabpage hidden">
+    <div class="card">
+      <h2>電圧降下計算（簡易）</h2>
+      <p class="desc">銅導体の抵抗率を使った概算です。</p>
+      <div class="grid">
+        <div class="field"><label for="dropPhase">回路</label><select id="dropPhase"><option value="1">単相2線式</option><option value="3">三相3線式</option><option value="dc">直流2線式</option></select></div>
+        <div class="field"><label for="dropI">電流（A）</label><input id="dropI" type="number" min="0" step="any" placeholder="例：20"></div>
+        <div class="field"><label for="dropL">片道の長さ（m）</label><input id="dropL" type="number" min="0" step="any" placeholder="例：30"></div>
+        <div class="field"><label for="dropArea">導体断面積（mm²）</label><select id="dropArea"><option>1.25</option><option>2</option><option>3.5</option><option>5.5</option><option>8</option><option>14</option><option>22</option><option>30</option><option>38</option><option>50</option><option>60</option><option>100</option><option>150</option><option>200</option><option>250</option><option>325</option><option>400</option></select></div>
+        <div class="field"><label for="dropV">電源電圧（V）</label><input id="dropV" type="number" min="0" step="any" value="200"></div>
+      </div>
+      <div class="actions"><button id="btnDropCalc">計算する</button><button class="secondary" id="btnDropClear">クリア</button></div>
+      <div id="dropResult" class="result hidden" aria-live="polite"></div>
+
+      <details class="law-info">
+        <summary>⚖️ 根拠・関連法令規格（内線規程1310節）</summary>
+        <div class="law-content">
+          <b>内線規程 1310-1（電圧降下）における基準：</b>
+          <ul>
+            <li><b>標準（配線長60m以下）：</b> 幹線・分岐回路ともに標準電圧の
