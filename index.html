@@ -74,4 +74,44 @@ footer{max-width:900px;margin:auto;padding:0 16px 28px;color:var(--muted);font-s
       <h2>電圧・電流・電力・抵抗（オームの法則・電力）</h2>
       <p class="desc">任意の2項目を入力すると、残りの項目が自動計算されます（2つ入力すると残りは入力不可になります）。</p>
       <div class="grid">
-        <div class="field"><label for="basicV">電圧 V（V）</label><input id="basic
+        <div class="field"><label for="basicV">電圧 V（V）</label><input id="basicV" class="basic-input" type="number" min="0" step="any" placeholder="例：100"></div>
+        <div class="field"><label for="basicI">電流 I（A）</label><input id="basicI" class="basic-input" type="number" min="0" step="any" placeholder="例：5"></div>
+        <div class="field"><label for="basicP">電力 P（W）</label><input id="basicP" class="basic-input" type="number" min="0" step="any" placeholder="例：500"></div>
+        <div class="field"><label for="basicR">抵抗 R（Ω）</label><input id="basicR" class="basic-input" type="number" min="0" step="any" placeholder="例：20"></div>
+      </div>
+      <div class="actions">
+        <button type="button" onclick="runBasicCalc()">計算する</button>
+        <button type="button" class="secondary" onclick="resetBasic()">クリア</button>
+      </div>
+      <div id="basicResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula" style="margin-top:12px;">P = V × I　／　V = I × R　／　I = V ÷ R　／　R = V ÷ I</p>
+      <div class="basis-container"><span class="basis-label">根拠：オームの法則・電力基本式</span></div>
+    </div>
+
+    <div class="card">
+      <h2>単相・三相交流計算</h2>
+      <p class="desc">計算目的に合わせて入力し、有効電力・電流・電圧などを求めます。</p>
+      <div class="grid">
+        <div class="field"><label for="acPhase">回路</label><select id="acPhase"><option value="3">三相3線式</option><option value="1">単相</option></select></div>
+        <div class="field"><label for="acMode">計算目的</label><select id="acMode" onchange="toggleAcMode()"><option value="p">有効電力 P（kW）を求める</option><option value="i">電流 I（A）を求める</option><option value="v">電圧 V（V）を求める</option></select></div>
+        <div class="field" id="wrapAcV"><label for="acV">電圧（V）</label><input id="acV" type="number" min="0" step="any" value="200"></div>
+        <div class="field" id="wrapAcI"><label for="acI">電流（A）</label><input id="acI" type="number" min="0" step="any" placeholder="例：10"></div>
+        <div class="field hidden" id="wrapAcP"><label for="acP">有効電力 P（kW）</label><input id="acP" type="number" min="0" step="any" placeholder="例：3.5"></div>
+        <div class="field"><label for="acPf">力率（0～1）</label><input id="acPf" type="number" min="0" max="1" step="any" value="0.8"></div>
+      </div>
+      <div class="actions">
+        <button type="button" onclick="runAcCalc()">計算する</button>
+        <button type="button" class="secondary" onclick="resetAc()">クリア</button>
+      </div>
+      <div id="acResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula" style="margin-top:12px;">単相：P = V × I × PF ÷ 1000　／　三相：P = √3 × V × I × PF ÷ 1000</p>
+      <div class="basis-container"><span class="basis-label">根拠：交流回路基本式</span></div>
+    </div>
+  </section>
+
+  <!-- 力率・kVA -->
+  <section id="pf" class="tabpage hidden">
+    <div class="card">
+      <h2>有効電力・皮相電力・無効電力・力率</h2>
+      <p class="desc">有効電力 kW と皮相電力 kVA から、力率と無効電力 kvar を求めます。</p>
+      <div class
