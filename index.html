@@ -364,4 +364,38 @@ function wireCalc(){
     <div class="small">選定基準値</div>
     <div class="big">許容電流の目安：${fmt(target)} A</div>
     <div class="calc-step">
- 
+      <div><b>公式：</b>必要許容電流 ＝ 設計電流 × (1 ＋ 余裕率 ÷ 100)</div>
+      <div><b>代入：</b>${fmt(i)} A × (1 ＋ ${fmt(margin)} ÷ 100) ＝ ${fmt(target)} A</div>
+    </div>
+    <div>設計電流：${fmt(i)} A</div>
+    <div class="small" style="margin-top:8px;">この値（${fmt(target)} A）以上の許容電流を持つ電線サイズをメーカー許容電流表から選定してください。</div>
+  `);
+}
+
+function freqCalc(){
+  const f=val('freqHz'), p=val('freqPoles');
+  if(!(f>0)||!(p>0)) return err('freqResult','周波数と極数を正しく入力してください。');
+  
+  const rpm = 120 * f / p;
+
+  show('freqResult', `
+    <div class="small">計算結果</div>
+    <div class="big">同期回転数：${fmt(rpm, 1)} rpm</div>
+    <div class="calc-step">
+      <div><b>公式：</b>Ns = 120 × f ÷ 極数</div>
+      <div><b>代入：</b>Ns = 120 × ${fmt(f)} Hz ÷ ${fmt(p)} 極 ＝ ${fmt(rpm, 1)} rpm</div>
+    </div>
+    <div>周波数：${fmt(f)} Hz</div>
+    <div>極数：${fmt(p)} 極</div>
+  `);
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
