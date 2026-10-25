@@ -176,7 +176,7 @@ footer{max-width:900px;margin:auto;padding:0 16px 28px;color:var(--muted);font-s
 <footer>このアプリは参考計算用です。安全・法令・設計判断を代替するものではありません。</footer>
 <script>
 const $ = id => document.getElementById(id);
-function val(id){const n=Number($(id).value);return$(id).value.trim()!==''&&Number.isFinite(n)?n:NaN}
+function val(id){const n=Number($(id).value);return $(id).value.trim()!==''&&Number.isFinite(n)?n:NaN}
 function fmt(n,d=3){if(!Number.isFinite(n))return '—';return n.toLocaleString('ja-JP',{maximumFractionDigits:d,minimumFractionDigits:0})}
 function show(id,html){$(id).innerHTML=html;$(id).classList.remove('hidden')}
 function err(id,msg){show(id,`<div class="error">${msg}</div>`)}
@@ -223,16 +223,269 @@ function basicCalc(){
   let calcP = p, calcV = v, calcI = i, calcR = r;
   let steps = [];
 
-  // V, I から算出
   if (hasV && hasI) {
     calcP = v * i;
     calcR = i > 0 ? v / i : NaN;
     steps.push({ name: '電力 P', val: `${fmt(calcP)} W (${fmt(calcP/1000)} kW)`, formula: 'P = V × I', subst: `P = ${fmt(v)} V × ${fmt(i)} A` });
     steps.push({ name: '抵抗 R', val: `${fmt(calcR)} Ω`, formula: 'R = V ÷ I', subst: `R = ${fmt(v)} V ÷ ${fmt(i)} A` });
   }
-  // V, R から算出
   else if (hasV && hasR) {
     calcI = r > 0 ? v / r : NaN;
     calcP = v * calcI;
     steps.push({ name: '電流 I', val: `${fmt(calcI)} A`, formula: 'I = V ÷ R', subst: `I = ${fmt(v)} V ÷ ${fmt(r)} Ω` });
-    steps.push({ name: '電力
+    steps.push({ name: '電力 P', val: `${fmt(calcP)} W (${fmt(calcP/1000)} kW)`, formula: 'P = V² ÷ R', subst: `P = ${fmt(v)}² ÷ ${fmt(r)} Ω` });
+  }
+  else if (hasV && hasP) {
+    calcI = v > 0 ? p / v : NaN;
+    calcR = calcI > 0 ? v / calcI : NaN;
+    steps.push({ name: '電流 I', val: `${fmt(calcI)} A`, formula: 'I = P ÷ V', subst: `I = ${fmt(p)} W ÷ ${fmt(v)} V` });
+    steps.push({ name: '抵抗 R', val: `${fmt(calcR)} Ω`, formula: 'R = V² ÷ P', subst: `R = ${fmt(v)}² ÷ ${fmt(p)} W` });
+  }
+  else if (hasI && hasR) {
+    calcV = i * r;
+    calcP = calcV * i;
+    steps.push({ name: '電圧 V', val: `${fmt(calcV)} V`, formula: 'V = I × R', subst: `V = ${fmt(i)} A × ${fmt(r)} Ω` });
+    steps.push({ name: '電力 P', val: `${fmt(calcP)} W (${fmt(calcP/1000)} kW)`, formula: 'P = I² × R', subst: `P = ${fmt(i)}² × ${fmt(r)} Ω` });
+  }
+  else if (hasI && hasP) {
+    calcV = i > 0 ? p / i : NaN;
+    calcR = i > 0 ? calcV / i : NaN;
+    steps.push({ name: '電圧 V', val: `${fmt(calcV)} V`, formula: 'V = P ÷ I', subst: `V = ${fmt(p)} W ÷ ${fmt(i)} A` });
+    steps.push({ name: '抵抗 R', val: `${fmt(calcR)} Ω`, formula: 'R = P ÷ I²', subst: `R = ${fmt(p)} W ÷ (${fmt(i)} A)²` });
+  }
+  else if (hasP && hasR) {
+    calcV = Math.sqrt(p * r);
+    calcI = r > 0 ? calcV / r : NaN;
+    steps.push({ name: '電圧 V', val: `${fmt(calcV)} V`, formula: 'V = √(P × R)', subst: `V = √(${fmt(p)} W × ${fmt(r)} Ω)` });
+    steps.push({ name: '電流 I', val: `${fmt(calcI)} A`, formula: 'I = √(P ÷ R)', subst: `I = √(${fmt(p)} W ÷ ${fmt(r)} Ω)` });
+  }
+  else {
+    return err('basicResult', '入力項目をちょうど2つ入力してください。');
+  }
+
+  let stepsHtml = steps.map(s => `
+    <div class="calc-step">
+      <div><b>【${s.name}】 ${s.val}</b></div>
+      <div>公式：${s.formula}</div>
+      <div>代入：${s.subst}</div>
+    </div>
+  `).join('');
+
+  show('basicResult', `
+    <div class="small">計算結果・導出プロセス</div>
+    ${stepsHtml}
+    <div style="margin-top:10px;">
+      <b>電圧：</b>${fmt(calcV)} V ／ <b>電流：</b>${fmt(calcI)} A<br>
+      <b>電力：</b>${fmt(calcP)} W ／ <b>抵抗：</b>${fmt(calcR)} Ω
+    </div>
+  `);
+}
+
+// ③ 単相・三相計算のモード切り替え・計算機能
+function updateAcMode() {
+  const mode = $('acMode').value;
+  // 求める項目に合わせて、入力不要なフィールドを隠す
+  $('fieldAcV').classList.toggle('hidden', mode === 'v');
+  $('fieldAcI').classList.toggle('hidden', mode === 'i');
+  $('fieldAcP').classList.toggle('hidden', mode === 'p');
+}
+
+function acPowerCalc(){
+  const phase = val('acPhase'), mode = $('acMode').value, pf = val('acPf');
+  const is3Phase = phase === 3;
+  const sqrt3 = Math.sqrt(3);
+
+  if (!(pf > 0 && pf <= 1)) return err('acResult', '力率は0より大きく1以下の数値を指定してください。');
+
+  if (mode === 'p') {
+    const v = val('acV'), i = val('acI');
+    if (!(v > 0) || !(i >= 0)) return err('acResult', '電圧と電流を正しく入力してください。');
+    const s = (is3Phase ? sqrt3 : 1) * v * i / 1000;
+    const p = s * pf;
+    const q = Math.sqrt(Math.max(0, s * s - p * p));
+    const formulaStr = is3Phase ? "P = √3 × V × I × PF ÷ 1000" : "P = V × I × PF ÷ 1000";
+    const substStr = is3Phase 
+      ? `P = 1.732 × ${fmt(v)} V × ${fmt(i)} A × ${fmt(pf)} ÷ 1000`
+      : `P = ${fmt(v)} V × ${fmt(i)} A × ${fmt(pf)} ÷ 1000`;
+
+    show('acResult', `
+      <div class="small">計算結果（有効電力 P）</div>
+      <div class="big">${fmt(p)} kW</div>
+      <div class="calc-step">
+        <div><b>公式：</b>${formulaStr}</div>
+        <div><b>代入：</b>${substStr}</div>
+      </div>
+      <div>皮相電力 (S)：${fmt(s)} kVA</div>
+      <div>無効電力 (Q)：${fmt(q)} kvar</div>
+    `);
+  } 
+  else if (mode === 'i') {
+    const v = val('acV'), p = val('acP');
+    if (!(v > 0) || !(p >= 0)) return err('acResult', '電圧と有効電力を正しく入力してください。');
+    const i = (p * 1000) / ((is3Phase ? sqrt3 : 1) * v * pf);
+    const s = (is3Phase ? sqrt3 : 1) * v * i / 1000;
+    const formulaStr = is3Phase ? "I = P × 1000 ÷ (√3 × V × PF)" : "I = P × 1000 ÷ (V × PF)";
+    const substStr = is3Phase
+      ? `I = ${fmt(p)} kW × 1000 ÷ (1.732 × ${fmt(v)} V × ${fmt(pf)})`
+      : `I = ${fmt(p)} kW × 1000 ÷ (${fmt(v)} V × ${fmt(pf)})`;
+
+    show('acResult', `
+      <div class="small">計算結果（電流 I）</div>
+      <div class="big">${fmt(i)} A</div>
+      <div class="calc-step">
+        <div><b>公式：</b>${formulaStr}</div>
+        <div><b>代入：</b>${substStr}</div>
+      </div>
+      <div>皮相電力 (S)：${fmt(s)} kVA</div>
+    `);
+  } 
+  else if (mode === 'v') {
+    const i = val('acI'), p = val('acP');
+    if (!(i > 0) || !(p >= 0)) return err('acResult', '電流と有効電力を正しく入力してください。');
+    const v = (p * 1000) / ((is3Phase ? sqrt3 : 1) * i * pf);
+    const s = (is3Phase ? sqrt3 : 1) * v * i / 1000;
+    const formulaStr = is3Phase ? "V = P × 1000 ÷ (√3 × I × PF)" : "V = P × 1000 ÷ (I × PF)";
+    const substStr = is3Phase
+      ? `V = ${fmt(p)} kW × 1000 ÷ (1.732 × ${fmt(i)} A × ${fmt(pf)})`
+      : `V = ${fmt(p)} kW × 1000 ÷ (${fmt(i)} A × ${fmt(pf)})`;
+
+    show('acResult', `
+      <div class="small">計算結果（電圧 V）</div>
+      <div class="big">${fmt(v)} V</div>
+      <div class="calc-step">
+        <div><b>公式：</b>${formulaStr}</div>
+        <div><b>代入：</b>${substStr}</div>
+      </div>
+      <div>皮相電力 (S)：${fmt(s)} kVA</div>
+    `);
+  }
+}
+
+function pfCalc(){
+  const p=val('pfP'), s=val('pfS');
+  if(!(p>=0)||!(s>0)||p>s) return err('pfResult','有効電力は0以上、皮相電力は0より大きく、kWはkVA以下にしてください。');
+  
+  const pf = p / s;
+  const q = Math.sqrt(Math.max(0, s*s - p*p));
+
+  show('pfResult', `
+    <div class="small">計算結果</div>
+    <div class="big">力率：${fmt(pf*100, 2)} %</div>
+    <div class="calc-step">
+      <div><b>力率公式：</b>PF = P ÷ S ＝ ${fmt(p)} kW ÷ ${fmt(s)} kVA ＝ ${fmt(pf, 4)}</div>
+      <div><b>無効電力公式：</b>Q = √(S² − P²) ＝ √(${fmt(s)}² − ${fmt(p)}²)</div>
+    </div>
+    <div>無効電力の大きさ：${fmt(q)} kvar</div>
+    <div>有効電力：${fmt(p)} kW</div>
+    <div>皮相電力：${fmt(s)} kVA</div>
+  `);
+}
+
+function convertCalc(){
+  const phase=val('convPhase'), v=val('convV'), pf=val('convPf'), type=$('convType').value, x=val('convVal');
+  if(!(v>0)||!(pf>0&&pf<=1)||!(x>=0)) return err('convResult','電圧と値を入力し、力率は0より大きく1以下にしてください。');
+  
+  const is3Phase = phase === 3;
+  const factor = (is3Phase ? Math.sqrt(3) : 1) * v / 1000;
+  let p, s, i, formulaStr = "", substStr = "";
+
+  if(type==='kw'){
+    p = x; s = p / pf; i = x / factor / pf;
+    formulaStr = is3Phase ? "I = P ÷ (√3 × V × PF) × 1000" : "I = P ÷ (V × PF) × 1000";
+    substStr = is3Phase ? `I = ${fmt(p)} ÷ (1.732 × ${fmt(v)} × ${fmt(pf)}) × 1000` : `I = ${fmt(p)} ÷ (${fmt(v)} × ${fmt(pf)}) × 1000`;
+  } else if(type==='kva'){
+    s = x; p = s * pf; i = x / factor;
+    formulaStr = is3Phase ? "I = S ÷ (√3 × V) × 1000" : "I = S ÷ V × 1000";
+    substStr = is3Phase ? `I = ${fmt(s)} ÷ (1.732 × ${fmt(v)}) × 1000` : `I = ${fmt(s)} ÷ ${fmt(v)} × 1000`;
+  } else {
+    i = x; s = factor * i; p = s * pf;
+    formulaStr = is3Phase ? "P = √3 × V × I × PF ÷ 1000" : "P = V × I × PF ÷ 1000";
+    substStr = is3Phase ? `P = 1.732 × ${fmt(v)} × ${fmt(i)} × ${fmt(pf)} ÷ 1000` : `P = ${fmt(v)} × ${fmt(i)} × ${fmt(pf)} ÷ 1000`;
+  }
+
+  show('convResult', `
+    <div class="small">換算結果</div>
+    <div class="big">${fmt(p)} kW</div>
+    <div class="calc-step">
+      <div><b>公式：</b>${formulaStr}</div>
+      <div><b>代入：</b>${substStr}</div>
+    </div>
+    <div>電流：<b>${fmt(i)} A</b></div>
+    <div>皮相電力：${fmt(s)} kVA</div>
+    <div>力率：${fmt(pf*100, 2)} %</div>
+  `);
+}
+
+function dropCalc(){
+  const phase=$('dropPhase').value, i=val('dropI'), l=val('dropL'), a=val('dropArea'), v=val('dropV');
+  if(!(i>=0)||!(l>=0)||!(a>0)||!(v>0)) return err('dropResult','電流・長さ・電圧を正しく入力してください。');
+  
+  const rho = 0.0175;
+  const is3Phase = phase === '3';
+  const mult = is3Phase ? Math.sqrt(3) : 2;
+  const dv = mult * i * l * rho / a;
+  const percent = dv / v * 100;
+
+  const formulaStr = is3Phase ? "ΔV = √3 × L × I × ρ ÷ A" : "ΔV = 2 × L × I × ρ ÷ A";
+  const substStr = is3Phase 
+    ? `ΔV = 1.732 × ${fmt(l)} m × ${fmt(i)} A × 0.0175 ÷ ${a} mm²`
+    : `ΔV = 2 × ${fmt(l)} m × ${fmt(i)} A × 0.0175 ÷ ${a} mm²`;
+
+  show('dropResult', `
+    <div class="small">計算結果</div>
+    <div class="big">電圧降下：約 ${fmt(dv)} V</div>
+    <div class="calc-step">
+      <div><b>公式：</b>${formulaStr} (ρ=0.0175)</div>
+      <div><b>代入：</b>${substStr}</div>
+      <div><b>降下率：</b>${fmt(dv)} V ÷ ${fmt(v)} V × 100 ＝ ${fmt(percent, 2)} %</div>
+    </div>
+    <div>電圧降下率：約 <b>${fmt(percent, 2)} %</b></div>
+    <div>計算長さ：片道 ${fmt(l)} m</div>
+  `);
+}
+
+function wireCalc(){
+  const i=val('wireI'), margin=val('wireMargin');
+  if(!(i>0)||!(margin>=0)) return err('wireResult','設計電流を0より大きく入力し、余裕率を0以上にしてください。');
+  
+  const target = i * (1 + margin / 100);
+
+  show('wireResult', `
+    <div class="small">選定基準値</div>
+    <div class="big">許容電流の目安：${fmt(target)} A</div>
+    <div class="calc-step">
+      <div><b>公式：</b>必要許容電流 ＝ 設計電流 × (1 ＋ 余裕率 ÷ 100)</div>
+      <div><b>代入：</b>${fmt(i)} A × (1 ＋ ${fmt(margin)} ÷ 100) ＝ ${fmt(target)} A</div>
+    </div>
+    <div>設計電流：${fmt(i)} A</div>
+    <div class="small" style="margin-top:8px;">この値（${fmt(target)} A）以上の許容電流を持つ電線サイズをメーカー許容電流表から選定してください。</div>
+  `);
+}
+
+function freqCalc(){
+  const f=val('freqHz'), p=val('freqPoles');
+  if(!(f>0)||!(p>0)) return err('freqResult','周波数と極数を正しく入力してください。');
+  
+  const rpm = 120 * f / p;
+
+  show('freqResult', `
+    <div class="small">計算結果</div>
+    <div class="big">同期回転数：${fmt(rpm, 1)} rpm</div>
+    <div class="calc-step">
+      <div><b>公式：</b>Ns = 120 × f ÷ 極数</div>
+      <div><b>代入：</b>Ns = 120 × ${fmt(f)} Hz ÷ ${fmt(p)} 極 ＝ ${fmt(rpm, 1)} rpm</div>
+    </div>
+    <div>周波数：${fmt(f)} Hz</div>
+    <div>極数：${fmt(p)} 極</div>
+  `);
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
