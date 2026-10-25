@@ -1,218 +1,246 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>電気計算アプリ</title>
+<meta name="theme-color" content="#101923">
+<title>電気計算ツール</title>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0; padding: 18px;
-    font-family: sans-serif;
-      background: #f1f5f9; color: #172b4d;
+:root{color-scheme:dark;--bg:#101923;--panel:#182531;--panel2:#202f3c;--line:#354653;--text:#f4f8fb;--muted:#aebfcd;--blue:#39b8e8;--blue2:#176b8a;--green:#123c38;--greenline:#287b69;--danger:#ffb4ab}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top right,#18394a 0,transparent 34%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+main{width:min(100% - 24px,560px);margin:0 auto;padding:22px 0 40px}
+header{display:flex;align-items:center;gap:12px;margin:4px 0 22px}
+.logo{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:#24465a;color:#75d5f5;font-size:25px;font-weight:800}
+h1{font-size:1.25rem;margin:0;letter-spacing:.02em}
+.subtitle{font-size:.72rem;color:var(--muted);letter-spacing:.12em}
+.pill{margin-left:auto;border:1px solid #287b69;color:#a9e9d7;border-radius:999px;padding:4px 10px;font-size:.75rem}
+.card{background:rgba(24,37,49,.96);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:0 8px 28px #00000018}
+h2{font-size:1rem;margin:0 0 14px}
+.segmented{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:18px}
+.segmented button{min-height:64px;padding:10px 4px;border:1px solid var(--line);border-radius:13px;background:#202f3c;color:var(--text);font:inherit;font-weight:700}
+.segmented button small{display:block;font-size:.72rem;color:var(--muted);font-weight:500}
+.segmented button.active{background:#1d6178;border-color:#39b8e8;box-shadow:inset 0 0 0 1px #39b8e8}
+.field{display:block;margin:14px 0}
+.field span{display:block;color:#d4e0e9;font-size:.9rem;font-weight:600;margin-bottom:7px}
+.inputwrap{position:relative}
+input{width:100%;min-height:52px;background:var(--panel2);border:1px solid #415462;border-radius:12px;padding:12px 52px 12px 14px;color:var(--text);font:inherit;font-size:1.08rem;outline:none}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #39b8e833}
+.unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.hint{font-size:.78rem;color:var(--muted);margin:10px 0 0}
+.primary{width:100%;min-height:54px;border:0;border-radius:14px;background:linear-gradient(135deg,#208ab0,#176b8a);color:white;font:inherit;font-size:1rem;font-weight:750;box-shadow:0 5px 14px #0002}
+.primary:active,.secondary:active,.segmented button:active{transform:scale(.99)}
+.result{background:linear-gradient(135deg,#123c38,#153d4a);border:1px solid var(--greenline);border-radius:16px;padding:17px;margin-top:16px}
+.result-label{font-size:.84rem;color:#a9e9d7}
+.result-value{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:2px 0}
+.result-value strong{font-size:clamp(2rem,10vw,2.8rem);line-height:1.2;overflow-wrap:anywhere}
+.result-value span{font-size:1rem;color:#a9e9d7}
+.formula{font-size:.82rem;color:#b8d9d1}
+.notice{font-size:.85rem;color:var(--danger);margin-top:12px}
+.result-actions{display:flex;gap:8px;margin-top:13px}
+.secondary{min-height:42px;padding:9px 12px;border-radius:11px;border:1px solid var(--line);background:#202f3c;color:var(--text);font:inherit;font-size:.86rem}
+.result-actions .secondary{flex:1}
+.history-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.history-head h2{margin:0}
+.history-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:9px}
+.history-item{padding:12px;border:1px solid var(--line);border-radius:13px;background:#14212b}
+.history-top{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.history-result{font-weight:750;font-size:1rem}
+.history-time{font-size:.72rem;color:var(--muted);white-space:nowrap}
+.history-detail{font-size:.82rem;color:#c2d0da;margin-top:5px;overflow-wrap:anywhere}
+.history-actions{display:flex;justify-content:flex-end;margin-top:8px}
+.empty{font-size:.88rem;color:var(--muted);padding:14px 0 2px}
+footer{text-align:center;color:#8396a5;font-size:.75rem;padding:4px 0}
+@media(min-width:440px){main{padding-top:30px}.card{padding:22px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="logo" aria-hidden="true">ϟ</div>
+  <div><h1>電気計算ツール</h1><div class="subtitle">ELECTRICAL CALCULATOR</div></div>
+  <span class="pill">DC</span>
+</header>
+
+<section class="card" aria-labelledby="calc-title">
+  <h2 id="calc-title">計算する項目</h2>
+  <div class="segmented" role="group" aria-label="計算対象">
+    <button type="button" data-target="V" class="active" aria-pressed="true">電圧 <small>Vを計算</small></button>
+    <button type="button" data-target="I" aria-pressed="false">電流 <small>Aを計算</small></button>
+    <button type="button" data-target="P" aria-pressed="false">電力 <small>Wを計算</small></button>
+  </div>
+  <form id="calc-form">
+    <label class="field" id="field-V"><span>電圧（V）</span><div class="inputwrap"><input id="input-V" inputmode="decimal" autocomplete="off" placeholder="例：24"><span class="unit">V</span></div></label>
+    <label class="field" id="field-I"><span>電流（A）</span><div class="inputwrap"><input id="input-I" inputmode="decimal" autocomplete="off" placeholder="例：5"><span class="unit">A</span></div></label>
+    <label class="field" id="field-P"><span>電力（W）</span><div class="inputwrap"><input id="input-P" inputmode="decimal" autocomplete="off" placeholder="例：120"><span class="unit">W</span></div></label>
+    <button class="primary" type="submit">計算する</button>
+    <p class="hint">計算対象の欄は空欄にし、残り2項目を入力してください。数値は0以上で入力します。</p>
+  </form>
+  <div id="result" class="result" hidden aria-live="polite">
+    <div class="result-label" id="result-label">計算結果</div>
+    <div class="result-value"><strong id="result-value">—</strong><span id="result-unit"></span></div>
+    <div class="formula" id="result-formula"></div>
+    <div class="result-actions">
+      <button type="button" class="secondary" id="copy-result">結果をコピー</button>
+      <button type="button" class="secondary" id="clear-inputs">入力をクリア</button>
+    </div>
+  </div>
+  <div id="error" class="notice" role="alert" hidden></div>
+</section>
+
+<section class="card" aria-labelledby="history-title">
+  <div class="history-head">
+    <h2 id="history-title">計算履歴 <span id="history-count" class="subtitle">0/30件</span></h2>
+    <button type="button" class="secondary" id="clear-history">履歴を全削除</button>
+  </div>
+  <ul id="history-list" class="history-list"></ul>
+  <div id="history-empty" class="empty">まだ計算履歴はありません。</div>
+</section>
+<footer>計算結果は参考値です。実際の設備作業では定格・規程・測定値を確認してください。</footer>
+</main>
+<script>
+(() => {
+  const STORAGE_KEY = "electricalCalculatorHistory";
+  const labels = {V:"電圧", I:"電流", P:"電力"};
+  const units = {V:"V", I:"A", P:"W"};
+  let target = "V";
+  let lastResult = null;
+  let history = [];
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    if (Array.isArray(saved)) history = saved.slice(0, 30);
+  } catch (_) { history = []; }
+
+  const $ = id => document.getElementById(id);
+  const inputs = {V:$("input-V"), I:$("input-I"), P:$("input-P")};
+
+  function setTarget(next) {
+    target = next;
+    document.querySelectorAll("[data-target]").forEach(button => {
+      const active = button.dataset.target === target;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+    Object.keys(inputs).forEach(key => {
+      inputs[key].disabled = key === target;
+      inputs[key].placeholder = key === target ? "計算する項目" : ({V:"例：24",I:"例：5",P:"例：120"}[key]);
+      if (key === target) inputs[key].value = "";
+    });
+    $("result").hidden = true;
+    $("error").hidden = true;
+  }
+
+  document.querySelectorAll("[data-target]").forEach(button => {
+    button.addEventListener("click", () => setTarget(button.dataset.target));
+  });
+
+  function readNumber(key) {
+    const raw = inputs[key].value.trim();
+    if (raw === "") return null;
+    const value = Number(raw);
+    if (!Number.isFinite(value) || value < 0) throw new Error(labels[key] + "は0以上の数値で入力してください。");
+    return value;
+  }
+
+  function fmt(n) {
+    if (!Number.isFinite(n)) return "計算不能";
+    return Number(n.toPrecision(8)).toLocaleString("ja-JP", {maximumFractionDigits:8});
+  }
+
+  function calculate(event) {
+    event.preventDefault();
+    $("error").hidden = true;
+    const others = Object.keys(inputs).filter(key => key !== target);
+    let a, b, value, formula;
+    try {
+      a = readNumber(others[0]);
+      b = readNumber(others[1]);
+      if (a === null || b === null) throw new Error("計算する項目以外の2項目を入力してください。");
+      if (target === "V") {
+        const i = readNumber("I"), p = readNumber("P");
+        if (i === 0) {
+          if (p !== 0) throw new Error("電流が0 Aの場合、電力が0 W以外では電圧を求められません。");
+          value = 0; formula = "V = P ÷ I（IとPがともに0のため、結果は一意に決まりません）";
+        } else { value = p / i; formula = "V = P ÷ I = " + fmt(p) + " ÷ " + fmt(i); }
+      } else if (target === "I") {
+        const v = readNumber("V"), p = readNumber("P");
+        if (v === 0) {
+          if (p !== 0) throw new Error("電圧が0 Vの場合、電力が0 W以外では電流を求められません。");
+          value = 0; formula = "I = P ÷ V（VとPがともに0のため、結果は一意に決まりません）";
+        } else { value = p / v; formula = "I = P ÷ V = " + fmt(p) + " ÷ " + fmt(v); }
+      } else {
+        const v = readNumber("V"), i = readNumber("I");
+        value = v * i; formula = "P = V × I = " + fmt(v) + " × " + fmt(i);
       }
-      header {
-        background: #1265c8; color: white;
-          padding: 22px 16px; border-radius: 16px;
-            text-align: center;
-            }
-            header h1 { font-size: 23px; margin: 0 0 8px; }
-            header p { margin: 0; font-size: 13px; }
-            .card {
-              background: white; padding: 18px;
-                border-radius: 14px; margin-top: 16px;
-                  box-shadow: 0 2px 8px #0000000c;
-                  }
-                  h2 { font-size: 18px; margin-top: 0; }
-                  label { display: block; font-weight: bold; margin: 14px 0 6px; }
-                  input, select, button {
-                    width: 100%; padding: 13px;
-                      font-size: 16px; border-radius: 9px;
-                      }
-                      input, select {
-                        border: 1px solid #cbd5e1; background: white;
-                        }
-                        input:disabled { background: #e9eef5; color: #64748b; }
-                        button {
-                          border: 0; background: #1265c8;
-                            color: white; font-weight: bold;
-                              margin-top: 16px;
-                              }
-                              button.secondary { background: #e2e8f0; color: #172b4d; }
-                              .result {
-                                background: #e0f7e9; padding: 18px;
-                                  border-radius: 12px; margin-top: 16px;
-                                    text-align: center;
-                                    }
-                                    .result strong { display: block; font-size: 28px; margin-top: 8px; }
-                                    .note { font-size: 13px; color: #526176; line-height: 1.7; }
-                                    .history-item {
-                                      border-bottom: 1px solid #e2e8f0;
-                                        padding: 12px 0; font-size: 14px;
-                                        }
-                                        </style>
-                                        </head>
-                                        <body>
+      if (!Number.isFinite(value)) throw new Error("計算結果が数値の範囲を超えています。入力値を確認してください。");
+      $("result-label").textContent = "計算結果　" + labels[target];
+      $("result-value").textContent = fmt(value);
+      $("result-unit").textContent = units[target];
+      $("result-formula").textContent = formula;
+      $("result").hidden = false;
+      lastResult = {target, value, formula, inputs:{V:inputs.V.value,I:inputs.I.value,P:inputs.P.value}, time:new Date().toISOString()};
+      history.unshift(lastResult);
+      history = history.slice(0,30);
+      saveHistory();
+      renderHistory();
+    } catch (error) {
+      $("error").textContent = error.message || "入力内容を確認してください。";
+      $("error").hidden = false;
+    }
+  }
+  $("calc-form").addEventListener("submit", calculate);
 
-                                        <header>
-                                          <h1>⚡ 電気計算アプリ</h1>
-                                            <p>電圧・電流・電力をかんたん計算</p>
-                                            </header>
+  function saveHistory() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); }
+    catch (_) { $("error").textContent = "履歴を端末に保存できませんでした。ブラウザの設定を確認してください。"; $("error").hidden = false; }
+  }
 
-                                            <section class="card">
-                                              <h2>計算条件</h2>
+  function renderHistory() {
+    const list = $("history-list");
+    list.replaceChildren();
+    $("history-count").textContent = history.length + "/30件";
+    $("history-empty").hidden = history.length > 0;
+    history.forEach((item, index) => {
+      const li = document.createElement("li"); li.className = "history-item";
+      const top = document.createElement("div"); top.className = "history-top";
+      const value = document.createElement("div"); value.className = "history-result";
+      value.textContent = labels[item.target] + "：" + fmt(Number(item.value)) + " " + units[item.target];
+      const time = document.createElement("div"); time.className = "history-time";
+      const date = new Date(item.time); time.textContent = Number.isNaN(date.getTime()) ? "" : date.toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+      top.append(value,time);
+      const detail = document.createElement("div"); detail.className = "history-detail";
+      detail.textContent = Object.keys(item.inputs || {}).filter(k => item.inputs[k] !== "").map(k => labels[k] + " " + item.inputs[k] + " " + units[k]).join(" / ");
+      const actions = document.createElement("div"); actions.className = "history-actions";
+      const del = document.createElement("button"); del.type = "button"; del.className = "secondary"; del.textContent = "この履歴を削除";
+      del.addEventListener("click", () => { history.splice(index,1); saveHistory(); renderHistory(); });
+      actions.append(del); li.append(top,detail,actions); list.append(li);
+    });
+  }
 
-                                                <label for="target">計算する項目</label>
-                                                  <select id="target" onchange="updateFields()">
-                                                      <option value="p">電力を計算（W）</option>
-                                                          <option value="i">電流を計算（A）</option>
-                                                              <option value="v">電圧を計算（V）</option>
-                                                                </select>
+  $("clear-history").addEventListener("click", () => {
+    if (!history.length) return;
+    if (confirm("計算履歴をすべて削除しますか？")) { history = []; saveHistory(); renderHistory(); }
+  });
+  $("clear-inputs").addEventListener("click", () => {
+    Object.keys(inputs).forEach(k => { if (k !== target) inputs[k].value = ""; });
+    $("result").hidden = true; $("error").hidden = true;
+  });
+  $("copy-result").addEventListener("click", async () => {
+    if (!lastResult) return;
+    const text = labels[lastResult.target] + "：" + fmt(lastResult.value) + " " + units[lastResult.target] + "\n" + lastResult.formula;
+    try {
+      await navigator.clipboard.writeText(text);
+      $("copy-result").textContent = "コピーしました";
+      setTimeout(() => $("copy-result").textContent = "結果をコピー", 1500);
+    } catch (_) {
+      $("error").textContent = "コピーできませんでした。結果を長押ししてコピーしてください。";
+      $("error").hidden = false;
+    }
+  });
 
-                                                                  <label for="voltage">電圧（V）</label>
-                                                                    <input id="voltage" type="number" step="any" placeholder="例：100">
-
-                                                                      <label for="current">電流（A）</label>
-                                                                        <input id="current" type="number" step="any" placeholder="例：5">
-
-                                                                          <label for="power">電力（W）</label>
-                                                                            <input id="power" type="number" step="any" placeholder="例：500">
-
-                                                                              <button onclick="calculate()">計算する</button>
-
-                                                                                <div id="result" class="result" aria-live="polite">
-                                                                                    計算する項目を選び、数値を入力してください。
-                                                                                      </div>
-                                                                                        <p class="note">
-                                                                                            ※ 直流回路を対象としています。交流の有効電力計算には、
-                                                                                                力率などを考慮する必要があります。
-                                                                                                  </p>
-                                                                                                  </section>
-
-                                                                                                  <section class="card">
-                                                                                                    <h2>計算履歴</h2>
-                                                                                                      <div id="history"></div>
-                                                                                                        <button class="secondary" onclick="clearHistory()">履歴を消去</button>
-                                                                                                        </section>
-
-                                                                                                        <script>
-                                                                                                        const $ = id => document.getElementById(id);
-
-                                                                                                        function updateFields() {
-                                                                                                          const target = $("target").value;
-                                                                                                            ["voltage", "current", "power"].forEach(id => {
-                                                                                                                $(id).disabled = id ===
-                                                                                                                      ({v:"voltage", i:"current", p:"power"}[target]);
-                                                                                                                        });
-                                                                                                                          $("result").textContent = "必要な数値を入力してください。";
-                                                                                                                          }
-
-                                                                                                                          function calculate() {
-                                                                                                                            const target = $("target").value;
-                                                                                                                              const ids = ["voltage", "current", "power"];
-                                                                                                                                const missing = {v:"voltage", i:"current", p:"power"}[target];
-                                                                                                                                  const values = {};
-
-                                                                                                                                    for (const id of ids) {
-                                                                                                                                        if (id === missing) continue;
-                                                                                                                                            const value = $(id).value.trim();
-                                                                                                                                                if (value === "" || !Number.isFinite(Number(value))) {
-                                                                                                                                                      $("result").textContent = "必要な数値を正しく入力してください。";
-                                                                                                                                                            return;
-                                                                                                                                                                }
-                                                                                                                                                                    values[id] = Number(value);
-                                                                                                                                                                      }
-
-                                                                                                                                                                        let answer, label, unit;
-
-                                                                                                                                                                          if (target === "p") {
-                                                                                                                                                                              answer = values.voltage * values.current;
-                                                                                                                                                                                  label = "電力"; unit = "W";
-                                                                                                                                                                                    } else if (target === "i") {
-                                                                                                                                                                                        if (values.voltage === 0) {
-                                                                                                                                                                                              $("result").textContent = "電圧は0以外を入力してください。";
-                                                                                                                                                                                                    return;
-                                                                                                                                                                                                        }
-                                                                                                                                                                                                            answer = values.power / values.voltage;
-                                                                                                                                                                                                                label = "電流"; unit = "A";
-                                                                                                                                                                                                                  } else {
-                                                                                                                                                                                                                      if (values.current === 0) {
-                                                                                                                                                                                                                            $("result").textContent = "電流は0以外を入力してください。";
-                                                                                                                                                                                                                                  return;
-                                                                                                                                                                                                                                      }
-                                                                                                                                                                                                                                          answer = values.power / values.current;
-                                                                                                                                                                                                                                              label = "電圧"; unit = "V";
-                                                                                                                                                                                                                                                }
-
-                                                                                                                                                                                                                                                  if (!Number.isFinite(answer)) {
-                                                                                                                                                                                                                                                      $("result").textContent = "計算できない値です。";
-                                                                                                                                                                                                                                                          return;
-                                                                                                                                                                                                                                                            }
-
-                                                                                                                                                                                                                                                              $(missing).value = answer;
-                                                                                                                                                                                                                                                                const formatted = Number(answer.toPrecision(10));
-                                                                                                                                                                                                                                                                  $("result").innerHTML =
-                                                                                                                                                                                                                                                                      "計算結果：" + label +
-                                                                                                                                                                                                                                                                          "<strong>" + formatted.toLocaleString("ja-JP") +
-                                                                                                                                                                                                                                                                              " " + unit + "</strong>";
-
-                                                                                                                                                                                                                                                                                const record = {
-                                                                                                                                                                                                                                                                                    date: new Date().toLocaleString("ja-JP"),
-                                                                                                                                                                                                                                                                                        label, answer: formatted, unit,
-                                                                                                                                                                                                                                                                                            voltage: $("voltage").value,
-                                                                                                                                                                                                                                                                                                current: $("current").value,
-                                                                                                                                                                                                                                                                                                    power: $("power").value
-                                                                                                                                                                                                                                                                                                      };
-
-                                                                                                                                                                                                                                                                                                        let history = getHistory();
-                                                                                                                                                                                                                                                                                                          history.unshift(record);
-                                                                                                                                                                                                                                                                                                            history = history.slice(0, 30);
-
-                                                                                                                                                                                                                                                                                                              try {
-                                                                                                                                                                                                                                                                                                                  localStorage.setItem("electricHistory", JSON.stringify(history));
-                                                                                                                                                                                                                                                                                                                      renderHistory();
-                                                                                                                                                                                                                                                                                                                        } catch (e) {
-                                                                                                                                                                                                                                                                                                                            $("result").innerHTML +=
-                                                                                                                                                                                                                                                                                                                                  "<p>履歴を保存できませんでした。</p>";
-                                                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                                                    }
-
-                                                                                                                                                                                                                                                                                                                                    function getHistory() {
-                                                                                                                                                                                                                                                                                                                                      try {
-                                                                                                                                                                                                                                                                                                                                          return JSON.parse(localStorage.getItem("electricHistory") || "[]");
-                                                                                                                                                                                                                                                                                                                                            } catch (e) {
-                                                                                                                                                                                                                                                                                                                                                return [];
-                                                                                                                                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                                                                                                                                                  }
-
-                                                                                                                                                                                                                                                                                                                                                  function renderHistory() {
-                                                                                                                                                                                                                                                                                                                                                    const history = getHistory();
-                                                                                                                                                                                                                                                                                                                                                      $("history").innerHTML = "";
-                                                                                                                                                                                                                                                                                                                                                        if (!history.length) {
-                                                                                                                                                                                                                                                                                                                                                            $("history").textContent = "まだ履歴はありません。";
-                                                                                                                                                                                                                                                                                                                                                                return;
-                                                                                                                                                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                                                                                                                                                                    history.forEach(item => {
-                                                                                                                                                                                                                                                                                                                                                                        const div = document.createElement("div");
-                                                                                                                                                                                                                                                                                                                                                                            div.className = "history-item";
-                                                                                                                                                                                                                                                                                                                                                                                div.textContent =
-                                                                                                                                                                                                                                                                                                                                                                                      item.date + "｜" + item.label + "：" +
-                                                                                                                                                                                                                                                                                                                                                                                            item.answer.toLocaleString("ja-JP") + " " + item.unit;
-                                                                                                                                                                                                                                                                                                                                                                                                $("history").appendChild(div);
-                                                                                                                                                                                                                                                                                                                                                                                                  });
-                                                                                                                                                                                                                                                                                                                                                                                                  }
-
-                                                                                                                                                                                                                                                                                                                                                                                                  function clearHistory() {
-                                                                                                                                                                                                                                                                                                                                                                                                    if (confirm("計算履歴をすべて消去しますか？")) {
-                                                                                                                                                                                                                                                                                                                                                                                                        localStorage.removeItem("electricHistory");
-                                                                                                                                                                                                                                                                                                                                                                                                            renderHistory();
-                                                                                                                                                                                                                                                                                                                                                                                                              }
-                                                                                                                                                                                                                                                                                                                                                                                                              }
-
-                                                                                                                                                                                                                                                                                                                                                                                                              updateFields();
-                                                                                                                                                                                                                                                                                                                                                                                                              renderHistory();
-                                                                                                                                                                                                                                                                                                                                                                                                              </script>
-                                                                                                                                                                                                                                                                                                                                                                                                              </body>
-                                                                                                                                                                                                                                                                                                                                                                                                              </html>
-                                                                                                                                                                                                                                                                                                                                                                                                              
+  setTarget("V");
+  renderHistory();
+})();
+</script>
+</body>
+</html>
