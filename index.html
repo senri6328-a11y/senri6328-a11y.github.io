@@ -59,6 +59,7 @@ footer{max-width:900px;margin:auto;padding:0 16px 28px;color:var(--muted);font-s
 </header>
 <main>
   <div class="notice">計算結果は目安・確認用です。電線選定や電圧降下は、敷設条件・周囲温度・許容電流・保護協調・法令・メーカー資料を必ず確認してください。</div>
+  
   <nav class="tabs" aria-label="計算機能">
     <button class="tab active" data-tab="power">電力・回路</button>
     <button class="tab" data-tab="pf">力率・kVA</button>
@@ -67,22 +68,10 @@ footer{max-width:900px;margin:auto;padding:0 16px 28px;color:var(--muted);font-s
     <button class="tab" data-tab="freq">周波数・回転数</button>
   </nav>
 
+  <!-- 電力・回路 -->
   <section id="power" class="tabpage">
     <div class="card">
       <h2>電圧・電流・電力・抵抗（オームの法則・電力）</h2>
       <p class="desc">任意の2項目を入力すると、残りの項目が自動計算されます（2つ入力すると残りは入力不可になります）。</p>
       <div class="grid">
-        <div class="field"><label for="basicV">電圧 V（V）</label><input id="basicV" class="basic-input" type="number" min="0" step="any" placeholder="例：100"></div>
-        <div class="field"><label for="basicI">電流 I（A）</label><input id="basicI" class="basic-input" type="number" min="0" step="any" placeholder="例：5"></div>
-        <div class="field"><label for="basicP">電力 P（W）</label><input id="basicP" class="basic-input" type="number" min="0" step="any" placeholder="例：500"></div>
-        <div class="field"><label for="basicR">抵抗 R（Ω）</label><input id="basicR" class="basic-input" type="number" min="0" step="any" placeholder="例：20"></div>
-      </div>
-      <div class="actions"><button onclick="basicCalc()">計算する</button><button class="secondary" onclick="clearBasicFields()">クリア</button></div>
-      <div id="basicResult" class="result hidden" aria-live="polite"></div>
-      <p class="formula" style="margin-top:12px;">P = V × I　／　V = I × R　／　I = V ÷ R　／　R = V ÷ I</p>
-      <div class="basis-container"><span class="basis-label">根拠：オームの法則・電力基本式</span></div>
-    </div>
-
-    <div class="card">
-      <h2>単相・三相交流計算</h2>
-      <p class="desc">計算目的に
+        <div class="field"><label for="basicV">電圧 V（V）</label><input id="basic
