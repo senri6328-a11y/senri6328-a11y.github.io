@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#101827">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="電気計算ツール">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
 <title>電気計算ツール</title>
 <style>
 :root{color-scheme:dark;--bg:#0b1220;--panel:#121d2e;--panel2:#18263a;--line:#2a3a52;--text:#eef4ff;--muted:#aab8ce;--accent:#64d9c3;--accent2:#8bb7ff;--danger:#ff9a9a}
@@ -189,6 +196,13 @@ function convertCalc(){const phase=val('convPhase'),v=val('convV'),pf=val('convP
 function dropCalc(){const phase=$('dropPhase').value,i=val('dropI'),l=val('dropL'),a=val('dropArea'),v=val('dropV');if(!(i>=0)||!(l>=0)||!(a>0)||!(v>0))return err('dropResult','電流・長さ・電圧を正しく入力してください。');const rho=.0175,mult=phase==='3'?Math.sqrt(3):2,dv=mult*i*l*rho/a,percent=dv/v*100;show('dropResult',`<div class="big">電圧降下：約 ${fmt(dv)} V</div><div>電圧降下率：約 ${fmt(percent,2)} %</div><div>計算長さ：片道 ${fmt(l)} m</div><div class="small">抵抗率0.0175 Ω·mm²/mによる簡易計算。実際の交流回路では条件により結果が異なります。</div>`)}
 function wireCalc(){const i=val('wireI'),margin=val('wireMargin');if(!(i>0)||!(margin>=0))return err('wireResult','設計電流を0より大きく入力し、余裕率を0以上にしてください。');const target=i*(1+margin/100);show('wireResult',`<div>設計電流：${fmt(i)} A</div><div class="big">選定時に確認する電流の目安：${fmt(target)} A</div><div>この値以上の許容電流を持つ電線候補を、使用する電線メーカーの許容電流表から確認してください。</div><div class="small">断面積だけでは電線を選定できません。電線種類、敷設方法、周囲温度、同一管内の条数、短絡時の熱耐量、電圧降下、保護装置との協調などを確認してください。本アプリは電線サイズを自動決定しません。</div>`)}
 function freqCalc(){const f=val('freqHz'),p=val('freqPoles');if(!(f>0)||!(p>0))return err('freqResult','周波数と極数を正しく入力してください。');const rpm=120*f/p;show('freqResult',`<div class="big">同期回転数：${fmt(rpm,1)} rpm</div><div>周波数：${fmt(f)} Hz</div><div>極数：${fmt(p)} 極</div><div class="small">誘導電動機の実回転数はすべりにより通常これより低くなります。</div>`)}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
