@@ -2,245 +2,193 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101923">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
 <title>電気計算ツール</title>
 <style>
-:root{color-scheme:dark;--bg:#101923;--panel:#182531;--panel2:#202f3c;--line:#354653;--text:#f4f8fb;--muted:#aebfcd;--blue:#39b8e8;--blue2:#176b8a;--green:#123c38;--greenline:#287b69;--danger:#ffb4ab}
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121d2e;--panel2:#18263a;--line:#2a3a52;--text:#eef4ff;--muted:#aab8ce;--accent:#64d9c3;--accent2:#8bb7ff;--danger:#ff9a9a}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at top right,#18394a 0,transparent 34%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
-main{width:min(100% - 24px,560px);margin:0 auto;padding:22px 0 40px}
-header{display:flex;align-items:center;gap:12px;margin:4px 0 22px}
-.logo{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:#24465a;color:#75d5f5;font-size:25px;font-weight:800}
-h1{font-size:1.25rem;margin:0;letter-spacing:.02em}
-.subtitle{font-size:.72rem;color:var(--muted);letter-spacing:.12em}
-.pill{margin-left:auto;border:1px solid #287b69;color:#a9e9d7;border-radius:999px;padding:4px 10px;font-size:.75rem}
-.card{background:rgba(24,37,49,.96);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:0 8px 28px #00000018}
-h2{font-size:1rem;margin:0 0 14px}
-.segmented{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:18px}
-.segmented button{min-height:64px;padding:10px 4px;border:1px solid var(--line);border-radius:13px;background:#202f3c;color:var(--text);font:inherit;font-weight:700}
-.segmented button small{display:block;font-size:.72rem;color:var(--muted);font-weight:500}
-.segmented button.active{background:#1d6178;border-color:#39b8e8;box-shadow:inset 0 0 0 1px #39b8e8}
-.field{display:block;margin:14px 0}
-.field span{display:block;color:#d4e0e9;font-size:.9rem;font-weight:600;margin-bottom:7px}
-.inputwrap{position:relative}
-input{width:100%;min-height:52px;background:var(--panel2);border:1px solid #415462;border-radius:12px;padding:12px 52px 12px 14px;color:var(--text);font:inherit;font-size:1.08rem;outline:none}
-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #39b8e833}
-.unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
-.hint{font-size:.78rem;color:var(--muted);margin:10px 0 0}
-.primary{width:100%;min-height:54px;border:0;border-radius:14px;background:linear-gradient(135deg,#208ab0,#176b8a);color:white;font:inherit;font-size:1rem;font-weight:750;box-shadow:0 5px 14px #0002}
-.primary:active,.secondary:active,.segmented button:active{transform:scale(.99)}
-.result{background:linear-gradient(135deg,#123c38,#153d4a);border:1px solid var(--greenline);border-radius:16px;padding:17px;margin-top:16px}
-.result-label{font-size:.84rem;color:#a9e9d7}
-.result-value{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:2px 0}
-.result-value strong{font-size:clamp(2rem,10vw,2.8rem);line-height:1.2;overflow-wrap:anywhere}
-.result-value span{font-size:1rem;color:#a9e9d7}
-.formula{font-size:.82rem;color:#b8d9d1}
-.notice{font-size:.85rem;color:var(--danger);margin-top:12px}
-.result-actions{display:flex;gap:8px;margin-top:13px}
-.secondary{min-height:42px;padding:9px 12px;border-radius:11px;border:1px solid var(--line);background:#202f3c;color:var(--text);font:inherit;font-size:.86rem}
-.result-actions .secondary{flex:1}
-.history-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.history-head h2{margin:0}
-.history-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:9px}
-.history-item{padding:12px;border:1px solid var(--line);border-radius:13px;background:#14212b}
-.history-top{display:flex;justify-content:space-between;gap:10px;align-items:start}
-.history-result{font-weight:750;font-size:1rem}
-.history-time{font-size:.72rem;color:var(--muted);white-space:nowrap}
-.history-detail{font-size:.82rem;color:#c2d0da;margin-top:5px;overflow-wrap:anywhere}
-.history-actions{display:flex;justify-content:flex-end;margin-top:8px}
-.empty{font-size:.88rem;color:var(--muted);padding:14px 0 2px}
-footer{text-align:center;color:#8396a5;font-size:.75rem;padding:4px 0}
-@media(min-width:440px){main{padding-top:30px}.card{padding:22px}}
+body{margin:0;background:linear-gradient(180deg,#101827,#0b1220 40%);color:var(--text);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.5}
+header{padding:22px 16px 14px;max-width:900px;margin:auto}
+h1{font-size:1.45rem;margin:0 0 5px}
+header p{margin:0;color:var(--muted);font-size:.92rem}
+main{max-width:900px;margin:auto;padding:0 12px 40px}
+.notice{background:#182a3c;border:1px solid #31516a;border-radius:12px;padding:12px;margin:0 0 14px;font-size:.86rem;color:#d9e8f8}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;position:sticky;top:0;background:#0d1625;z-index:5}
+.tab{border:1px solid var(--line);border-radius:999px;padding:9px 13px;background:var(--panel);color:var(--text);white-space:nowrap;font-size:.9rem}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#06221d;font-weight:700}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 8px 24px #0002}
+.card h2{font-size:1.08rem;margin:0 0 5px}
+.desc{font-size:.85rem;color:var(--muted);margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{min-width:0}
+label{display:block;color:#d6e2f5;font-size:.88rem;margin-bottom:5px}
+input,select{width:100%;min-width:0;border:1px solid #3a4d67;border-radius:10px;background:#0b1422;color:var(--text);padding:12px;font-size:1rem}
+input:focus,select:focus,button:focus{outline:2px solid var(--accent2);outline-offset:2px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:11px 14px;font-size:.95rem;font-weight:650;background:var(--accent);color:#06221d}
+button.secondary{background:#26364d;color:var(--text);border:1px solid #40536d}
+button.warn{background:#3b2832;color:#ffdede;border:1px solid #74424b}
+.result{margin-top:14px;padding:13px;border-radius:12px;background:#0b1724;border:1px solid #29465a;overflow-wrap:anywhere}
+.result .big{font-size:1.35rem;font-weight:750;color:var(--accent);margin:2px 0}
+.result .small{font-size:.86rem;color:var(--muted)}
+.error{color:var(--danger);font-size:.9rem;margin-top:10px}
+.hidden{display:none!important}
+.formula{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#bcd6ff;font-size:.86rem;overflow-wrap:anywhere}
+footer{max-width:900px;margin:auto;padding:0 16px 28px;color:var(--muted);font-size:.8rem}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.card{padding:14px}header{padding-top:18px}}
 </style>
 </head>
 <body>
-<main>
 <header>
-  <div class="logo" aria-hidden="true">ϟ</div>
-  <div><h1>電気計算ツール</h1><div class="subtitle">ELECTRICAL CALCULATOR</div></div>
-  <span class="pill">DC</span>
+  <h1>電気計算ツール</h1>
+  <p>直流・単相・三相の基本計算／現場での確認用</p>
 </header>
+<main>
+  <div class="notice">計算結果は目安・確認用です。電線選定や電圧降下は、敷設条件・周囲温度・許容電流・保護協調・法令・メーカー資料を必ず確認してください。</div>
+  <nav class="tabs" aria-label="計算機能">
+    <button class="tab active" data-tab="power">電力・回路</button>
+    <button class="tab" data-tab="pf">力率・kVA</button>
+    <button class="tab" data-tab="drop">電圧降下</button>
+    <button class="tab" data-tab="wire">電線選定補助</button>
+    <button class="tab" data-tab="freq">周波数・回転数</button>
+  </nav>
 
-<section class="card" aria-labelledby="calc-title">
-  <h2 id="calc-title">計算する項目</h2>
-  <div class="segmented" role="group" aria-label="計算対象">
-    <button type="button" data-target="V" class="active" aria-pressed="true">電圧 <small>Vを計算</small></button>
-    <button type="button" data-target="I" aria-pressed="false">電流 <small>Aを計算</small></button>
-    <button type="button" data-target="P" aria-pressed="false">電力 <small>Wを計算</small></button>
-  </div>
-  <form id="calc-form">
-    <label class="field" id="field-V"><span>電圧（V）</span><div class="inputwrap"><input id="input-V" inputmode="decimal" autocomplete="off" placeholder="例：24"><span class="unit">V</span></div></label>
-    <label class="field" id="field-I"><span>電流（A）</span><div class="inputwrap"><input id="input-I" inputmode="decimal" autocomplete="off" placeholder="例：5"><span class="unit">A</span></div></label>
-    <label class="field" id="field-P"><span>電力（W）</span><div class="inputwrap"><input id="input-P" inputmode="decimal" autocomplete="off" placeholder="例：120"><span class="unit">W</span></div></label>
-    <button class="primary" type="submit">計算する</button>
-    <p class="hint">計算対象の欄は空欄にし、残り2項目を入力してください。数値は0以上で入力します。</p>
-  </form>
-  <div id="result" class="result" hidden aria-live="polite">
-    <div class="result-label" id="result-label">計算結果</div>
-    <div class="result-value"><strong id="result-value">—</strong><span id="result-unit"></span></div>
-    <div class="formula" id="result-formula"></div>
-    <div class="result-actions">
-      <button type="button" class="secondary" id="copy-result">結果をコピー</button>
-      <button type="button" class="secondary" id="clear-inputs">入力をクリア</button>
+  <section id="power" class="tabpage">
+    <div class="card">
+      <h2>電圧・電流・電力・抵抗</h2>
+      <p class="desc">既知の2項目から、残りの基本量を計算します。直流または抵抗負荷の基本式です。</p>
+      <div class="grid">
+        <div class="field"><label for="basicMode">計算する値</label><select id="basicMode"><option value="p">電力 P（W）</option><option value="i">電流 I（A）</option><option value="v">電圧 V（V）</option><option value="r">抵抗 R（Ω）</option></select></div>
+        <div class="field"><label for="basicV">電圧 V（V）</label><input id="basicV" type="number" min="0" step="any" placeholder="例：100"></div>
+        <div class="field"><label for="basicI">電流 I（A）</label><input id="basicI" type="number" min="0" step="any" placeholder="例：5"></div>
+        <div class="field"><label for="basicP">電力 P（W）</label><input id="basicP" type="number" min="0" step="any" placeholder="例：500"></div>
+        <div class="field"><label for="basicR">抵抗 R（Ω）</label><input id="basicR" type="number" min="0" step="any" placeholder="例：20"></div>
+      </div>
+      <div class="actions"><button onclick="basicCalc()">計算する</button><button class="secondary" onclick="clearFields(['basicV','basicI','basicP','basicR'],'basicResult')">クリア</button></div>
+      <div id="basicResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula">P = V × I　／　V = I × R　／　I = V ÷ R　／　R = V ÷ I</p>
     </div>
-  </div>
-  <div id="error" class="notice" role="alert" hidden></div>
-</section>
 
-<section class="card" aria-labelledby="history-title">
-  <div class="history-head">
-    <h2 id="history-title">計算履歴 <span id="history-count" class="subtitle">0/30件</span></h2>
-    <button type="button" class="secondary" id="clear-history">履歴を全削除</button>
-  </div>
-  <ul id="history-list" class="history-list"></ul>
-  <div id="history-empty" class="empty">まだ計算履歴はありません。</div>
-</section>
-<footer>計算結果は参考値です。実際の設備作業では定格・規程・測定値を確認してください。</footer>
+    <div class="card">
+      <h2>単相・三相の有効電力</h2>
+      <p class="desc">電圧・電流・力率から有効電力を計算します。電圧は単相なら線間/電源電圧、三相なら線間電圧を入力します。</p>
+      <div class="grid">
+        <div class="field"><label for="acPhase">回路</label><select id="acPhase"><option value="3">三相3線式</option><option value="1">単相</option></select></div>
+        <div class="field"><label for="acV">電圧（V）</label><input id="acV" type="number" min="0" step="any" value="200"></div>
+        <div class="field"><label for="acI">電流（A）</label><input id="acI" type="number" min="0" step="any" placeholder="例：10"></div>
+        <div class="field"><label for="acPf">力率（0～1）</label><input id="acPf" type="number" min="0" max="1" step="any" value="0.8"></div>
+      </div>
+      <div class="actions"><button onclick="acPowerCalc()">計算する</button><button class="secondary" onclick="clearFields(['acV','acI','acPf'],'acResult')">クリア</button></div>
+      <div id="acResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula">単相：P = V × I × PF　／　三相：P = √3 × V線間 × I線 × PF</p>
+    </div>
+  </section>
+
+  <section id="pf" class="tabpage hidden">
+    <div class="card">
+      <h2>有効電力・皮相電力・無効電力・力率</h2>
+      <p class="desc">有効電力 kW と皮相電力 kVA から、力率と無効電力 kvar を求めます。</p>
+      <div class="grid">
+        <div class="field"><label for="pfP">有効電力 P（kW）</label><input id="pfP" type="number" min="0" step="any" placeholder="例：80"></div>
+        <div class="field"><label for="pfS">皮相電力 S（kVA）</label><input id="pfS" type="number" min="0" step="any" placeholder="例：100"></div>
+      </div>
+      <div class="actions"><button onclick="pfCalc()">計算する</button><button class="secondary" onclick="clearFields(['pfP','pfS'],'pfResult')">クリア</button></div>
+      <div id="pfResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula">PF = P ÷ S　／　Q = √(S² − P²)（単位：kvar）</p>
+      <p class="desc">この計算では無効電力の遅れ・進みの符号は判定しません。</p>
+    </div>
+    <div class="card">
+      <h2>kW・kVA・A 換算</h2>
+      <p class="desc">電圧と力率を使い、電力から電流、電流から電力を換算します。</p>
+      <div class="grid">
+        <div class="field"><label for="convPhase">回路</label><select id="convPhase"><option value="3">三相</option><option value="1">単相</option></select></div>
+        <div class="field"><label for="convV">電圧（V）</label><input id="convV" type="number" min="0" step="any" value="200"></div>
+        <div class="field"><label for="convPf">力率（0～1）</label><input id="convPf" type="number" min="0" max="1" step="any" value="0.9"></div>
+        <div class="field"><label for="convType">入力する値</label><select id="convType"><option value="kw">有効電力（kW）</option><option value="kva">皮相電力（kVA）</option><option value="a">電流（A）</option></select></div>
+        <div class="field"><label for="convVal">値</label><input id="convVal" type="number" min="0" step="any" placeholder="数値を入力"></div>
+      </div>
+      <div class="actions"><button onclick="convertCalc()">換算する</button><button class="secondary" onclick="clearFields(['convV','convPf','convVal'],'convResult')">クリア</button></div>
+      <div id="convResult" class="result hidden" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="drop" class="tabpage hidden">
+    <div class="card">
+      <h2>電圧降下計算（簡易）</h2>
+      <p class="desc">銅導体の抵抗率を使った概算です。交流リアクタンス、温度、配線方式などを簡略化しています。</p>
+      <div class="grid">
+        <div class="field"><label for="dropPhase">回路</label><select id="dropPhase"><option value="1">単相2線式</option><option value="3">三相3線式</option><option value="dc">直流2線式</option></select></div>
+        <div class="field"><label for="dropI">電流（A）</label><input id="dropI" type="number" min="0" step="any" placeholder="例：20"></div>
+        <div class="field"><label for="dropL">片道の長さ（m）</label><input id="dropL" type="number" min="0" step="any" placeholder="例：30"></div>
+        <div class="field"><label for="dropArea">導体断面積（mm²）</label><select id="dropArea"><option>1.25</option><option>2</option><option>3.5</option><option>5.5</option><option>8</option><option>14</option><option>22</option><option>30</option><option>38</option><option>50</option><option>60</option><option>100</option><option>150</option><option>200</option><option>250</option><option>325</option><option>400</option></select></div>
+        <div class="field"><label for="dropV">電源電圧（V）</label><input id="dropV" type="number" min="0" step="any" value="200"></div>
+      </div>
+      <div class="actions"><button onclick="dropCalc()">計算する</button><button class="secondary" onclick="clearFields(['dropI','dropL','dropV'],'dropResult')">クリア</button></div>
+      <div id="dropResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula">銅導体の抵抗率を 0.0175 Ω·mm²/m として概算。単相/直流：ΔV ≈ 2LIρ/A、三相：ΔV ≈ √3LIρ/A</p>
+    </div>
+  </section>
+
+  <section id="wire" class="tabpage hidden">
+    <div class="card">
+      <h2>電線サイズ選定の補助</h2>
+      <p class="desc">入力電流に対して、設定した許容電流表の値以上となる断面積を表示します。実際の許容電流は電線種類・敷設方法・周囲温度・条数などで変わります。</p>
+      <div class="grid">
+        <div class="field"><label for="wireI">設計電流（A）</label><input id="wireI" type="number" min="0" step="any" placeholder="例：25"></div>
+        <div class="field"><label for="wireMargin">余裕率（%）</label><input id="wireMargin" type="number" min="0" step="any" value="25"></div>
+        <div class="field"><label for="wireKind">簡易参考表</label><select id="wireKind"><option value="cv">CVケーブル参考値（概算）</option><option value="iv">IV電線参考値（概算）</option></select></div>
+      </div>
+      <div class="actions"><button onclick="wireCalc()">候補を表示</button><button class="secondary" onclick="clearFields(['wireI','wireMargin'],'wireResult')">クリア</button></div>
+      <div id="wireResult" class="result hidden" aria-live="polite"></div>
+      <p class="desc">この機能は正式な電線選定表ではありません。候補サイズを絞るための目安としてのみ使用してください。施工前に適用規程・メーカー表・保護装置との協調を確認してください。</p>
+    </div>
+  </section>
+
+  <section id="freq" class="tabpage hidden">
+    <div class="card">
+      <h2>周波数・同期回転数</h2>
+      <p class="desc">交流周波数と極数から同期回転数を計算します。</p>
+      <div class="grid">
+        <div class="field"><label for="freqHz">周波数（Hz）</label><input id="freqHz" type="number" min="0" step="any" value="60"></div>
+        <div class="field"><label for="freqPoles">極数</label><select id="freqPoles"><option value="2">2極</option><option value="4" selected>4極</option><option value="6">6極</option><option value="8">8極</option><option value="10">10極</option><option value="12">12極</option></select></div>
+      </div>
+      <div class="actions"><button onclick="freqCalc()">計算する</button><button class="secondary" onclick="clearFields(['freqHz'],'freqResult')">クリア</button></div>
+      <div id="freqResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula">同期回転数 Ns = 120 × f ÷ 極数（rpm）</p>
+      <p class="desc">誘導電動機の実回転数は、通常すべりのため同期回転数より少し低くなります。</p>
+    </div>
+  </section>
 </main>
+<footer>このアプリは参考計算用です。安全・法令・設計判断を代替するものではありません。</footer>
 <script>
-(() => {
-  const STORAGE_KEY = "electricalCalculatorHistory";
-  const labels = {V:"電圧", I:"電流", P:"電力"};
-  const units = {V:"V", I:"A", P:"W"};
-  let target = "V";
-  let lastResult = null;
-  let history = [];
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    if (Array.isArray(saved)) history = saved.slice(0, 30);
-  } catch (_) { history = []; }
-
-  const $ = id => document.getElementById(id);
-  const inputs = {V:$("input-V"), I:$("input-I"), P:$("input-P")};
-
-  function setTarget(next) {
-    target = next;
-    document.querySelectorAll("[data-target]").forEach(button => {
-      const active = button.dataset.target === target;
-      button.classList.toggle("active", active);
-      button.setAttribute("aria-pressed", String(active));
-    });
-    Object.keys(inputs).forEach(key => {
-      inputs[key].disabled = key === target;
-      inputs[key].placeholder = key === target ? "計算する項目" : ({V:"例：24",I:"例：5",P:"例：120"}[key]);
-      if (key === target) inputs[key].value = "";
-    });
-    $("result").hidden = true;
-    $("error").hidden = true;
-  }
-
-  document.querySelectorAll("[data-target]").forEach(button => {
-    button.addEventListener("click", () => setTarget(button.dataset.target));
-  });
-
-  function readNumber(key) {
-    const raw = inputs[key].value.trim();
-    if (raw === "") return null;
-    const value = Number(raw);
-    if (!Number.isFinite(value) || value < 0) throw new Error(labels[key] + "は0以上の数値で入力してください。");
-    return value;
-  }
-
-  function fmt(n) {
-    if (!Number.isFinite(n)) return "計算不能";
-    return Number(n.toPrecision(8)).toLocaleString("ja-JP", {maximumFractionDigits:8});
-  }
-
-  function calculate(event) {
-    event.preventDefault();
-    $("error").hidden = true;
-    const others = Object.keys(inputs).filter(key => key !== target);
-    let a, b, value, formula;
-    try {
-      a = readNumber(others[0]);
-      b = readNumber(others[1]);
-      if (a === null || b === null) throw new Error("計算する項目以外の2項目を入力してください。");
-      if (target === "V") {
-        const i = readNumber("I"), p = readNumber("P");
-        if (i === 0) {
-          if (p !== 0) throw new Error("電流が0 Aの場合、電力が0 W以外では電圧を求められません。");
-          value = 0; formula = "V = P ÷ I（IとPがともに0のため、結果は一意に決まりません）";
-        } else { value = p / i; formula = "V = P ÷ I = " + fmt(p) + " ÷ " + fmt(i); }
-      } else if (target === "I") {
-        const v = readNumber("V"), p = readNumber("P");
-        if (v === 0) {
-          if (p !== 0) throw new Error("電圧が0 Vの場合、電力が0 W以外では電流を求められません。");
-          value = 0; formula = "I = P ÷ V（VとPがともに0のため、結果は一意に決まりません）";
-        } else { value = p / v; formula = "I = P ÷ V = " + fmt(p) + " ÷ " + fmt(v); }
-      } else {
-        const v = readNumber("V"), i = readNumber("I");
-        value = v * i; formula = "P = V × I = " + fmt(v) + " × " + fmt(i);
-      }
-      if (!Number.isFinite(value)) throw new Error("計算結果が数値の範囲を超えています。入力値を確認してください。");
-      $("result-label").textContent = "計算結果　" + labels[target];
-      $("result-value").textContent = fmt(value);
-      $("result-unit").textContent = units[target];
-      $("result-formula").textContent = formula;
-      $("result").hidden = false;
-      lastResult = {target, value, formula, inputs:{V:inputs.V.value,I:inputs.I.value,P:inputs.P.value}, time:new Date().toISOString()};
-      history.unshift(lastResult);
-      history = history.slice(0,30);
-      saveHistory();
-      renderHistory();
-    } catch (error) {
-      $("error").textContent = error.message || "入力内容を確認してください。";
-      $("error").hidden = false;
-    }
-  }
-  $("calc-form").addEventListener("submit", calculate);
-
-  function saveHistory() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); }
-    catch (_) { $("error").textContent = "履歴を端末に保存できませんでした。ブラウザの設定を確認してください。"; $("error").hidden = false; }
-  }
-
-  function renderHistory() {
-    const list = $("history-list");
-    list.replaceChildren();
-    $("history-count").textContent = history.length + "/30件";
-    $("history-empty").hidden = history.length > 0;
-    history.forEach((item, index) => {
-      const li = document.createElement("li"); li.className = "history-item";
-      const top = document.createElement("div"); top.className = "history-top";
-      const value = document.createElement("div"); value.className = "history-result";
-      value.textContent = labels[item.target] + "：" + fmt(Number(item.value)) + " " + units[item.target];
-      const time = document.createElement("div"); time.className = "history-time";
-      const date = new Date(item.time); time.textContent = Number.isNaN(date.getTime()) ? "" : date.toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
-      top.append(value,time);
-      const detail = document.createElement("div"); detail.className = "history-detail";
-      detail.textContent = Object.keys(item.inputs || {}).filter(k => item.inputs[k] !== "").map(k => labels[k] + " " + item.inputs[k] + " " + units[k]).join(" / ");
-      const actions = document.createElement("div"); actions.className = "history-actions";
-      const del = document.createElement("button"); del.type = "button"; del.className = "secondary"; del.textContent = "この履歴を削除";
-      del.addEventListener("click", () => { history.splice(index,1); saveHistory(); renderHistory(); });
-      actions.append(del); li.append(top,detail,actions); list.append(li);
-    });
-  }
-
-  $("clear-history").addEventListener("click", () => {
-    if (!history.length) return;
-    if (confirm("計算履歴をすべて削除しますか？")) { history = []; saveHistory(); renderHistory(); }
-  });
-  $("clear-inputs").addEventListener("click", () => {
-    Object.keys(inputs).forEach(k => { if (k !== target) inputs[k].value = ""; });
-    $("result").hidden = true; $("error").hidden = true;
-  });
-  $("copy-result").addEventListener("click", async () => {
-    if (!lastResult) return;
-    const text = labels[lastResult.target] + "：" + fmt(lastResult.value) + " " + units[lastResult.target] + "\n" + lastResult.formula;
-    try {
-      await navigator.clipboard.writeText(text);
-      $("copy-result").textContent = "コピーしました";
-      setTimeout(() => $("copy-result").textContent = "結果をコピー", 1500);
-    } catch (_) {
-      $("error").textContent = "コピーできませんでした。結果を長押ししてコピーしてください。";
-      $("error").hidden = false;
-    }
-  });
-
-  setTarget("V");
-  renderHistory();
-})();
+const $ = id => document.getElementById(id);
+function val(id){const n=Number($(id).value);return $(id).value.trim()!==''&&Number.isFinite(n)?n:NaN}
+function fmt(n,d=3){if(!Number.isFinite(n))return '—';return n.toLocaleString('ja-JP',{maximumFractionDigits:d,minimumFractionDigits:0})}
+function show(id,html){$(id).innerHTML=html;$(id).classList.remove('hidden')}
+function err(id,msg){show(id,`<div class="error">${msg}</div>`)}
+function clearFields(ids,result){ids.forEach(id=>$(id).value='');$(result).classList.add('hidden')}
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b===btn));document.querySelectorAll('.tabpage').forEach(p=>p.classList.toggle('hidden',p.id!==btn.dataset.tab));window.scrollTo({top:0,behavior:'smooth'})}));
+function basicCalc(){
+ const mode=$('basicMode').value;let v=val('basicV'),i=val('basicI'),p=val('basicP'),r=val('basicR'),out=[];
+ const inputs={v,i,p,r};const missing=Object.keys(inputs).filter(k=>!Number.isFinite(inputs[k])||inputs[k]<0);
+ // Calculate only when two useful quantities are supplied; formulas support power, voltage, current and resistance.
+ if(mode==='p'){if(Number.isFinite(v)&&v>=0&&Number.isFinite(i)&&i>=0){p=v*i;r=i>0?v/i:NaN;}else if(Number.isFinite(v)&&Number.isFinite(r)&&r>0){i=v/r;p=v*i;}else if(Number.isFinite(i)&&Number.isFinite(r)&&r>0){v=i*r;p=v*i;}else return err('basicResult','電圧と電流、電圧と抵抗、または電流と抵抗を入力してください。')}
+ if(mode==='i'){if(Number.isFinite(v)&&Number.isFinite(r)&&r>0){i=v/r;p=v*i;}else if(Number.isFinite(p)&&Number.isFinite(v)&&v>0){i=p/v;r=v/i;}else return err('basicResult','電圧と抵抗、または電力と電圧を入力してください。')}
+ if(mode==='v'){if(Number.isFinite(i)&&Number.isFinite(r)&&r>=0){v=i*r;p=v*i;}else if(Number.isFinite(p)&&Number.isFinite(i)&&i>0){v=p/i;r=v/i;}else return err('basicResult','電流と抵抗、または電力と電流を入力してください。')}
+ if(mode==='r'){if(Number.isFinite(v)&&Number.isFinite(i)&&i>0){r=v/i;p=v*i;}else if(Number.isFinite(v)&&Number.isFinite(p)&&p>0){i=p/v;r=v/i;}else return err('basicResult','電圧と電流、または電圧と電力を入力してください。')}
+ if(!Number.isFinite(p)&&Number.isFinite(v)&&Number.isFinite(i))p=v*i;
+ if(!Number.isFinite(r)&&Number.isFinite(v)&&Number.isFinite(i)&&i>0)r=v/i;
+ if(!Number.isFinite(i)&&Number.isFinite(v)&&Number.isFinite(r)&&r>0)i=v/r;
+ if(!Number.isFinite(v)&&Number.isFinite(i)&&Number.isFinite(r))v=i*r;
+ show('basicResult',`<div class="small">計算結果</div><div>電圧：<b>${fmt(v)} V</b></div><div>電流：<b>${fmt(i)} A</b></div><div>電力：<b>${fmt(p)} W</b>（${fmt(p/1000)} kW）</div><div>抵抗：<b>${fmt(r)} Ω</b></div>`);
+}
+function acPowerCalc(){const phase=val('acPhase'),v=val('acV'),i=val('acI'),pf=val('acPf');if(!(v>0)||!(i>=0)||!(pf>=0&&pf<=1))return err('acResult','電圧・電流を入力し、力率は0～1で指定してください。');const s=(phase===3?Math.sqrt(3):1)*v*i/1000,p=s*pf,q=Math.sqrt(Math.max(0,s*s-p*p));show('acResult',`<div class="big">${fmt(p)} kW</div><div>皮相電力：${fmt(s)} kVA</div><div>無効電力の大きさ：${fmt(q)} kvar</div><div>電流：${fmt(i)} A</div>`)}
+function pfCalc(){const p=val('pfP'),s=val('pfS');if(!(p>=0)||!(s>0)||p>s)return err('pfResult','有効電力は0以上、皮相電力は0より大きく、kWはkVA以下にしてください。');const pf=p/s,q=Math.sqrt(Math.max(0,s*s-p*p));show('pfResult',`<div class="big">力率：${fmt(pf*100,2)} %</div><div>無効電力の大きさ：${fmt(q)} kvar</div><div>有効電力：${fmt(p)} kW</div><div>皮相電力：${fmt(s)} kVA</div>`)}
+function convertCalc(){const phase=val('convPhase'),v=val('convV'),pf=val('convPf'),type=$('convType').value,x=val('convVal');if(!(v>0)||!(pf>0&&pf<=1)||!(x>=0))return err('convResult','電圧と値を入力し、力率は0より大きく1以下にしてください。');const factor=(phase===3?Math.sqrt(3):1)*v/1000;let p,s,i;if(type==='kw'){p=x;s=p/pf;i=x/factor/pf}else if(type==='kva'){s=x;p=s*pf;i=x/factor}else{i=x;s=factor*i;p=s*pf}show('convResult',`<div class="big">${fmt(p)} kW</div><div>皮相電力：${fmt(s)} kVA</div><div>電流：${fmt(i)} A</div><div>力率：${fmt(pf*100,2)} %</div>`)}
+function dropCalc(){const phase=$('dropPhase').value,i=val('dropI'),l=val('dropL'),a=val('dropArea'),v=val('dropV');if(!(i>=0)||!(l>=0)||!(a>0)||!(v>0))return err('dropResult','電流・長さ・電圧を正しく入力してください。');const rho=.0175,mult=phase==='3'?Math.sqrt(3):2,dv=mult*i*l*rho/a,percent=dv/v*100;show('dropResult',`<div class="big">電圧降下：約 ${fmt(dv)} V</div><div>電圧降下率：約 ${fmt(percent,2)} %</div><div>計算長さ：片道 ${fmt(l)} m</div><div class="small">抵抗率0.0175 Ω·mm²/mによる簡易計算。実際の交流回路では条件により結果が異なります。</div>`)}
+function wireCalc(){const i=val('wireI'),margin=val('wireMargin');if(!(i>0)||!(margin>=0))return err('wireResult','設計電流を0より大きく入力し、余裕率を0以上にしてください。');const target=i*(1+margin/100);show('wireResult',`<div>設計電流：${fmt(i)} A</div><div class="big">選定時に確認する電流の目安：${fmt(target)} A</div><div>この値以上の許容電流を持つ電線候補を、使用する電線メーカーの許容電流表から確認してください。</div><div class="small">断面積だけでは電線を選定できません。電線種類、敷設方法、周囲温度、同一管内の条数、短絡時の熱耐量、電圧降下、保護装置との協調などを確認してください。本アプリは電線サイズを自動決定しません。</div>`)}
+function freqCalc(){const f=val('freqHz'),p=val('freqPoles');if(!(f>0)||!(p>0))return err('freqResult','周波数と極数を正しく入力してください。');const rpm=120*f/p;show('freqResult',`<div class="big">同期回転数：${fmt(rpm,1)} rpm</div><div>周波数：${fmt(f)} Hz</div><div>極数：${fmt(p)} 極</div><div class="small">誘導電動機の実回転数はすべりにより通常これより低くなります。</div>`)}
 </script>
 </body>
 </html>
