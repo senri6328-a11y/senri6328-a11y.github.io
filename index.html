@@ -103,4 +103,23 @@ footer{max-width:900px;margin:auto;padding:0 16px 28px;color:var(--muted);font-s
 
   <section id="pf" class="tabpage hidden">
     <div class="card">
-      <h2>有効電力・皮相電力
+      <h2>有効電力・皮相電力・無効電力・力率</h2>
+      <p class="desc">有効電力 kW と皮相電力 kVA から、力率と無効電力 kvar を求めます。</p>
+      <div class="grid">
+        <div class="field"><label for="pfP">有効電力 P（kW）</label><input id="pfP" type="number" min="0" step="any" placeholder="例：80"></div>
+        <div class="field"><label for="pfS">皮相電力 S（kVA）</label><input id="pfS" type="number" min="0" step="any" placeholder="例：100"></div>
+      </div>
+      <div class="actions"><button onclick="pfCalc()">計算する</button><button class="secondary" onclick="clearFields(['pfP','pfS'],'pfResult')">クリア</button></div>
+      <div id="pfResult" class="result hidden" aria-live="polite"></div>
+      <p class="formula" style="margin-top:12px;">PF = P ÷ S　／　Q = √(S² − P²)（単位：kvar）</p>
+      <div class="basis-container"><span class="basis-label">根拠：電力ベクトル関係式</span></div>
+      <p class="desc" style="margin-top:8px;margin-bottom:0;">この計算では無効電力の遅れ・進みの符号は判定しません。</p>
+    </div>
+
+    <div class="card">
+      <h2>kW・kVA・A 換算</h2>
+      <p class="desc">電圧と力率を使い、電力から電流、電流から電力を換算します。</p>
+      <div class="grid">
+        <div class="field"><label for="convPhase">回路</label><select id="convPhase"><option value="3">三相</option><option value="1">単相</option></select></div>
+        <div class="field"><label for="convV">電圧（V）</label><input id="convV" type="number" min="0" step="any" value="200"></div>
+        
